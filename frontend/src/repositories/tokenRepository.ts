@@ -4,17 +4,11 @@ import { ERC20ABI as IERC20ABI } from '../smc-types'
 import { TransactionResponse, Web3Provider } from '@ethersproject/providers'
 
 class TokenRepository {
-  private token: IERC20ABI | undefined
+  private token: IERC20ABI
   private provider: Web3Provider | undefined
 
-  constructor(provider?: ethers.providers.Web3Provider) {
-    if (provider) {
-      this.provider = provider
-      this.init(provider)
-    }
-  }
-
-  public init(provider: ethers.providers.Web3Provider): void {
+  constructor(provider: ethers.providers.Web3Provider) {
+    this.provider = provider
     this.provider = provider
     this.token = ERC20ABITypedFactory.connect(
       process.env.REACT_APP_TOKEN_ADDRESS || '',

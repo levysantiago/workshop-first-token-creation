@@ -2,11 +2,12 @@ import { Flex, Text, TextField } from "@radix-ui/themes";
 
 interface IInputTextProps {
   label: string
+  value: string
   onChange?: React.ChangeEventHandler<HTMLInputElement>
   placeholder?: string
 }
 
-export function InputText({ placeholder, label, onChange }: IInputTextProps) {
+export function InputText({ placeholder, value, label, onChange }: IInputTextProps) {
   return (
     <Flex gap="2" align="start" direction="column">
       <Text
@@ -18,6 +19,7 @@ export function InputText({ placeholder, label, onChange }: IInputTextProps) {
         type="text"
         placeholder={placeholder}
         variant="classic"
+        value={value}
         radius="full"
         color="purple"
         onChange={onChange}
