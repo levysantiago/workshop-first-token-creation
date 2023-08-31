@@ -1,16 +1,51 @@
 import { Box, Button, Flex, Text, } from "@radix-ui/themes"
 import { InputText } from "./components/InputText";
 import { InputNumber } from "./components/InputNumber";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TokenRepository from "./repositories/tokenRepository";
+import { ethers } from "ethers";
 
 function App() {
+  const [walletAddress, setWalletAddress] = useState('')
   const [mintAmount, setMintAmount] = useState("")
   const [burnAmount, setBurnAmount] = useState("")
   const [transferAmount, setTransferAmount] = useState("")
   const [transferAddress, setTransferAddress] = useState("")
+  const [tokenRepository, setTokenRepository] =
+    useState<TokenRepository>()
 
-  function handleMintSubmit() {
-    console.log(mintAmount);
+  async function connect(): Promise<string[] | undefined> {
+    if (window.ethereum) {
+      const accounts = (await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      })) as string[] | undefined
+
+      if (accounts && accounts.length) {
+        setWalletAddress(accounts[0])
+        // setIsConnected(true)
+      }
+
+      return accounts
+    }
+  }
+
+  function getProvider() {
+    if (window.ethereum !== undefined) {
+      const windowEthereum: any = window.ethereum
+      // Get the provider and signer from the browser window
+      const provider = new ethers.providers.Web3Provider(windowEthereum)
+
+      return provider
+    }
+  }
+
+  useEffect(() => {
+    const tokenRepository = new TokenRepository(getProvider())
+    setTokenRepository(tokenRepository)
+  }, [])
+
+  async function handleMintSubmit() {
+    await tokenRepository?.mint({ address: walletAddress, amount: mintAmount })
   }
 
   function handleBurnSubmit() {
@@ -26,8 +61,22 @@ function App() {
       <header>
         <Flex gap="3" align="center" direction="column" mb="9">
           <Text color="sky" size="9">Sinform Token</Text>
+
+          {walletAddress ?
+            <Text color="cyan" size="4">{walletAddress}</Text> :
+            <Button
+              size="3"
+              color="blue"
+              style={{ cursor: "pointer" }}
+              mb="5"
+              onClick={connect}
+            >
+              Connect Wallet
+            </Button>
+          }
         </Flex>
       </header>
+
 
       <Flex gap="9" align="start" direction="column">
         {/* MINT */}
